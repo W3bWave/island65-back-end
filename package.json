@@ -15,7 +15,6 @@
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "grammy": "^1.33.0",
-    "jsdom": "^25.0.1",
     "mongoose": "^8.9.1",
     "node-html-parser": "^6.1.13"
   }
