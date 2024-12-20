@@ -4,6 +4,8 @@ const express = require('express')
 const router = express.Router()
 
 async function getTracks(city = 1){
+    console.log("получаю трэки");
+    
     let request = await axios.get("https://ski-gv.ru/hills/"+city+"/1/");
     let FAKEDOM = parse.parse(request.data);
     let DOM_tracks = FAKEDOM.querySelectorAll(".track-option")
@@ -53,6 +55,7 @@ async function getTracks(city = 1){
 }
 
 async function getCities(){
+    console.log("получаю города");
     let request = await axios.get("https://ski-gv.ru/hills/1/1/");
     let FAKEDOM = parse.parse(request.data);
     let result = []
