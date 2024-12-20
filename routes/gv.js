@@ -92,6 +92,48 @@ router.get(['/tracks/:num','/tracks/'], async (req, res) => {
     res.json(tracks);
 })
 
+async function getTariffs(){
+     let request = await axios.get("https://ski-gv.ru/about-us/tarif/");
+    let FAKEDOM = parse.parse(request.data);
+    let result = []
+
+    rows = FAKEDOM.querySelector("table").querySelectorAll("tr")
+
+    for(let row of rows){
+        let cols = row.querySelectorAll("th")
+        let object = {}
+        for(let col in cols){
+            
+            if(col == 0) object.name = cols[0].textContent.replaceAll('\n','')
+            if(col == 1) object.price_by_card = cols[1].textContent.replaceAll(' ',' ')
+            if(col == 2) object.price_by_sakh_card = cols[2].textContent.replaceAll(' ','').replaceAll('\n','').replaceAll('-  ','-')
+        }
+        if(object.name && object.price_by_card){
+            result.push(object)
+        }
+    }
+    return result;
+}
+
+router.get('/weather',async (req,res)=>{
+    let reqs = await axios.get("https://api.weather.yandex.ru/v2/forecast?lat=46.95417072340388&lon=142.77982276089583",{
+        headers : {
+            'X-Yandex-Weather-Key' : "8ec7342a-19c2-4d07-a91c-2809b8f03acb"
+        }
+    })
+    res.json(reqs.data);
+})
+
+router.get('/tarifs',async (req,res)=>{
+    let tariffs = await getTariffs();
+
+    res.json({
+        skipass : tariffs,
+        other : [],
+        rent : []
+    })
+})
+
 
 module.exports = router
 
