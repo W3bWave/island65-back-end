@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-const { route } = require('./routes/telegram');
+const telegram = require('./routes/telegram');
+const gvRoute = require('./routes/gv');
+
 
 let app = express();
 app.use(cors());
@@ -12,7 +14,8 @@ app.get('/',(req,res)=>{
     })
 });
 
-app.use(route);
+app.use('/api/v1/telegram',telegram);
+app.use('/api/v1/gv',gvRoute);
 
 
 app.listen(80)
