@@ -1,5 +1,4 @@
 let axios = require('axios')
-let jsdom = require("jsdom");
 let { parse } = require('node-html-parser');
 const express = require('express')
 const router = express.Router()
