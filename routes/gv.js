@@ -3,6 +3,7 @@ let { parse } = require('node-html-parser');
 const express = require('express')
 const router = express.Router()
 
+
 async function getTracks(city = 1){
     console.log("получаю трэки");
     
@@ -30,12 +31,16 @@ async function getTracks(city = 1){
             trackObject.difficulty_in_num = 1
         }
         else if(DOM_track.querySelector(".track-option__number").classList.contains('track-option__number_style_2')){
-            trackObject.difficulty_name = "Сложная",
+            trackObject.difficulty_name = "Средняя",
             trackObject.difficulty_in_num = 2
         }
         else if(DOM_track.querySelector(".track-option__number").classList.contains('track-option__number_style_3')){
-            trackObject.difficulty_name = "Очень сложная",
+            trackObject.difficulty_name = "Сложная",
             trackObject.difficulty_in_num = 3
+        }
+        else if(DOM_track.querySelector(".track-option__number").classList.contains('track-option__number_style_4')){
+            trackObject.difficulty_name = "Очень сложная",
+            trackObject.difficulty_in_num = 4
         }
         trackObject.name = DOM_track.querySelector(".track-option__name").textContent;
         trackObject.length = DOM_track.querySelector(".icon_image_track-length").parentNode.textContent.replaceAll(' ','');
@@ -116,7 +121,7 @@ async function getTariffs(){
 }
 
 router.get('/weather',async (req,res)=>{
-    let reqs = await axios.get("https://api.weather.yandex.ru/v2/forecast?lat=46.95417072340388&lon=142.77982276089583",{
+    let reqs = await axios.get("https://api.weather.yandex.ru/v2/forecast?lat=46.95417072340388&lon=142.77982276089583&limit=1&lang=RU&theme=dark",{
         headers : {
             'X-Yandex-Weather-Key' : "8ec7342a-19c2-4d07-a91c-2809b8f03acb"
         }
@@ -134,6 +139,84 @@ router.get('/tarifs',async (req,res)=>{
     })
 })
 
+let WebSocket = require('ws');
+const { sendMessage } = require('./telegram');
+
+const wss = new WebSocket.Server({ port: 3000 });
+
+wss.on('connection', (ws) => {
+  console.log('Новый клиент подключился!');
+ 
+
+
+  ws.on('message', (message) => {
+    let json = JSON.parse(message);
+    console.log(json);
+    
+    if(json.action == "REGISTER_SESSION"){
+        ws.user = json.user;
+        console.log("registered");
+        
+    }
+    
+  });
+  
+  ws.on('close', () => {
+    console.log('Клиент отключился');
+  });
+});
+
+
+
+router.post('/companion/start',async (req,res)=>{
+    console.log(req.body);
+    for(let client of wss.clients){
+        if(client.user.id != req.body.user.id){
+            client.send(JSON.stringify({
+                action : "STARTED_COMPANION_WAIT",
+                userData : req.body.user
+            }))
+        }
+    }
+    res.json({"ok":"ok"})
+})
+
+
+router.post('/companion/stop',async (req,res)=>{
+    console.log(req.body);
+    for(let client of wss.clients){
+        if(client.user.id != req.body.user){
+            client.send(JSON.stringify({
+                action : "STOPED_COMPANION_WAIT",
+                userData : {
+                    id : req.body.user
+                }
+            }))
+        }
+    }
+    res.json({"ok":"ok"})
+})
+
+router.post('/companion/offer',async (req,res)=>{
+    console.log(req.body);
+    let sent = false;
+    for(let client of wss.clients){
+        if(client.user.id == req.body.to.id){
+            client.send(JSON.stringify({
+                action : "COMPANION_OFFER_FOR_YOU",
+                from : {
+                    id : req.body.from
+                }
+            }))
+            sent = true;
+        }
+    }
+
+    if(sent === false){
+        sendMessage(req.body.to.id, `Уведомление!\nПользователь: ${req.body.from.user.first_name} предлагает вам стать его попутчиком`)
+    }
+    res.json({"ok":"ok"})
+})
 
 module.exports = router
 

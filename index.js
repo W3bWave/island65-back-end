@@ -1,8 +1,9 @@
 const express = require('express');
 const cors = require('cors');
-const telegram = require('./routes/telegram');
+const {telegramRouter} = require('./routes/telegram');
 const gvRoute = require('./routes/gv');
 const fs = require('fs');
+const bodyParser = require('body-parser');
 
 let app = express();
 app.use(cors());
@@ -13,8 +14,8 @@ app.get('/',(req,res)=>{
         "welcome" : "to hackaton"
     })
 });
-
-app.use('/api/v1/telegram',telegram);
+app.use(bodyParser.json())
+app.use('/api/v1/telegram',telegramRouter);
 app.use('/api/v1/gv',gvRoute);
 
 

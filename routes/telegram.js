@@ -8,7 +8,7 @@ try {
   bot.command("start", (ctx) => ctx.reply("Проект команды W3BWAVE.",{
     reply_markup : new InlineKeyboard().url("Открыть Острова.65","https://t.me/island65_bot/Islands65")
 }));
-  // bot.start();
+  bot.start();
 } catch (error) {
   console.log(error);
   
@@ -22,5 +22,7 @@ router.get('/about', (req, res) => {
   res.send('About birds')
 })
 
-
-module.exports = router
+function sendMessage(id,message){
+  bot.api.sendMessage(id,message);
+}
+module.exports = {telegramRouter: router, sendMessage : sendMessage}
