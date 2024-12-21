@@ -22,7 +22,9 @@ router.get('/about', (req, res) => {
   res.send('About birds')
 })
 
-function sendMessage(id,message){
-  bot.api.sendMessage(id,message);
+function sendMessage(id,message,link){
+  bot.api.sendMessage(id,message,{
+    reply_markup : new InlineKeyboard().url("Написать",link)
+  });
 }
 module.exports = {telegramRouter: router, sendMessage : sendMessage}

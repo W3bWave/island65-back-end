@@ -142,8 +142,9 @@ router.get('/tarifs',async (req,res)=>{
 let WebSocket = require('ws');
 const { sendMessage } = require('./telegram');
 
-const wss = new WebSocket.Server({ port: 3000 });
+const wss = new WebSocket.Server({ port: 35555 });
 
+let companionsOrders = [];
 wss.on('connection', (ws) => {
   console.log('Новый клиент подключился!');
  
@@ -178,14 +179,20 @@ router.post('/companion/start',async (req,res)=>{
             }))
         }
     }
+    companionsOrders.push(req.body.user);
     res.json({"ok":"ok"})
+})
+
+router.get('/companion/get',async (req,res)=>{
+    res.json(companionsOrders);
 })
 
 
 router.post('/companion/stop',async (req,res)=>{
     console.log(req.body);
     for(let client of wss.clients){
-        if(client.user.id != req.body.user){
+        if(client.user.id != req.body.user.id){
+            
             client.send(JSON.stringify({
                 action : "STOPED_COMPANION_WAIT",
                 userData : {
@@ -194,6 +201,7 @@ router.post('/companion/stop',async (req,res)=>{
             }))
         }
     }
+    companionsOrders.splice(companionsOrders.indexOf(req.body.user),1);
     res.json({"ok":"ok"})
 })
 
@@ -213,7 +221,7 @@ router.post('/companion/offer',async (req,res)=>{
     }
 
     if(sent === false){
-        sendMessage(req.body.to.id, `Уведомление!\nПользователь: ${req.body.from.user.first_name} предлагает вам стать его попутчиком`)
+        sendMessage(req.body.to.id, `Уведомление!\nПользователь: ${req.body.from.user.first_name} предлагает вам стать его попутчиком`,`https://t.me/${req.body.from.user.username}`)
     }
     res.json({"ok":"ok"})
 })
