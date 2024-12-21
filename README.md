@@ -7,13 +7,14 @@
 
 ## Технологии
 - **Платформа:** Node.js
-- **Фреймворк:** Express.js
+- **Фреймворк:** Express.js, WebSocket(WS)
 
 ## Доступные API
+API доступно по публичной ссылке: [https://welcome.netcloud.dev](https://welcome.netcloud.dev).
 
 ### 1. **Горный воздух**
 #### Получение списка трасс
-- **URL:** `GET /api/v1/gv/tracks`
+- **URL:** `GET https://welcome.netcloud.dev/api/v1/gv/tracks`
 - **Описание:** Возвращает список трасс для первого города.
 - **Пример ответа:**
   ```json
@@ -33,7 +34,7 @@
   ```
 
 #### Получение трасс конкретного города
-- **URL:** `GET /api/v1/gv/tracks/:cityId`
+- **URL:** `GET https://welcome.netcloud.dev/api/v1/gv/tracks/:cityId`
 - **Описание:** Возвращает список трасс для указанного города.
 - **Параметры:**
   - `cityId` — ID города.
@@ -67,7 +68,7 @@
   ```
 
 #### Получение списка городов
-- **URL:** `GET /api/v1/gv/cities`
+- **URL:** `GET https://welcome.netcloud.dev/api/v1/gv/cities`
 - **Описание:** Возвращает список доступных городов.
 - **Пример ответа:**
   ```json
@@ -92,7 +93,7 @@
   ```
 
 #### Получение тарифов
-- **URL:** `GET /api/v1/gv/tarifs`
+- **URL:** `GET https://welcome.netcloud.dev/api/v1/gv/tarifs`
 - **Описание:** Возвращает информацию о тарифах, включая стоимость ски-пассов и проката оборудования.
 - **Пример ответа:**
   ```json
@@ -111,7 +112,7 @@
   ```
 
 #### Получение данных о погоде
-- **URL:** `GET /api/v1/gv/weather`
+- **URL:** `GET https://welcome.netcloud.dev/api/v1/gv/weather`
 - **Описание:** Возвращает актуальный прогноз погоды для курорта.
 - **Пример ответа:**
   ```json
