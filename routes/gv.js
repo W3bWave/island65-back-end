@@ -2,8 +2,25 @@ let axios = require('axios')
 let { parse } = require('node-html-parser');
 const express = require('express')
 const router = express.Router()
+let secrets = require('../secrets.json');
+const mongoose = require('mongoose');
 
 
+mongoose.connect(secrets.MONGO,{
+    authSource : 'admin'
+})
+  .then(() => console.log('Connected!'));
+
+
+const Schema = mongoose.Schema;
+
+
+const SosSchema = new Schema({
+    latitude : Number,
+    longitude : Number,
+    date : Date
+});
+const SosAlert = mongoose.model('SosAlert',SosSchema);
 async function getTracks(city = 1){
     console.log("получаю трэки");
     
@@ -139,9 +156,29 @@ router.get('/tarifs',async (req,res)=>{
     })
 })
 
+router.get('/sos/',async (req,res)=>{
+
+    let result = await SosAlert.find()
+
+    res.json(result);
+})
+
+router.post('/sos/',async (req,res)=>{
+    let {latitude,longitude} = req.body;
+
+    await new SosAlert({
+        latitude : latitude,
+        longitude : longitude,
+        date : Date.now()
+    }).save()
+
+    res.json({"status" : "ok"});
+})
+
 let WebSocket = require('ws');
 const { sendMessage } = require('./telegram');
 
+  
 const wss = new WebSocket.Server({ port: 35555 });
 
 let companionsOrders = [];
